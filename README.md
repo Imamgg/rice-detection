@@ -4,7 +4,7 @@ Aplikasi Streamlit untuk deteksi varietas dan jumlah butir beras menggunakan YOL
 
 ## Menjalankan secara lokal
 
-Gunakan Python 3.11. Pada PowerShell:
+Gunakan Python 3.11 sampai 3.14. Pada PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -23,12 +23,16 @@ Untuk mengunduh semua bobot sebelum server dijalankan, opsional:
 ## Deployment Streamlit
 
 1. Hubungkan repositori `Imamgg/rice-detection` ke layanan hosting Streamlit.
-2. Pilih branch `main`, entrypoint `app.py`, dan Python 3.11.
+2. Pilih branch `main` dan entrypoint `app.py`. Dependensi mendukung Python 3.11 sampai 3.14.
 3. Pasang dependensi dari `requirements.txt` (otomatis pada Streamlit Community Cloud).
 4. Pastikan server dapat mengunduh file dari Google Drive dan menulis ke folder `models/`.
 5. Sediakan memori yang cukup untuk PyTorch dan model pilihan. YOLOv8n merupakan bobot paling kecil; YOLOv3 memerlukan memori lebih besar. Maksimum dua model disimpan dalam cache.
 
-Aplikasi menggunakan CPU secara bawaan. GPU tersedia jika PyTorch mendeteksi CUDA. Restart pada hosting dengan penyimpanan sementara dapat mengharuskan pengunduhan ulang. Push ke GitHub belum mempublikasikan server aplikasi.
+Paket deployment memakai PyTorch CPU agar tidak mengunduh dependensi NVIDIA CUDA pada hosting tanpa GPU. `packages.txt` memasang pustaka sistem OpenCV pada Linux. Untuk deployment GPU, pasang pasangan PyTorch/torchvision CUDA yang sesuai secara terpisah. Restart pada hosting dengan penyimpanan sementara dapat mengharuskan pengunduhan ulang.
+
+### Pemulihan error startup
+
+Jika log Python 3.14 menampilkan `TypeError: Metaclasses with custom tp_new are not supported` saat memuat `google._upb._message`, pastikan server sudah memakai `protobuf==6.33.5` dari requirements terbaru. Versi 4.25.x tidak digunakan lagi. Perubahan requirements akan memicu pemasangan ulang pada Community Cloud; gunakan **Reboot app** jika server masih memakai lingkungan lama. `pyarrow` dibatasi di bawah versi 25 untuk menghindari versi bermasalah yang terdeteksi pada log hosting.
 
 ## Penggunaan
 

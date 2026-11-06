@@ -1,9 +1,14 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 streamlit==1.50.0
 ultralytics==8.4.203
-torch>=2.5,<3
-torchvision>=0.20,<1
+torch==2.9.1+cpu
+torchvision==0.24.1+cpu
 pillow>=10,<12
 pandas>=2.2,<3
 gdown>=5.2,<6
 PyYAML>=6,<7
-protobuf>=3.20.3,<5
+# Protobuf 4.x cannot load its native extension under Python 3.14.
+protobuf==6.33.5
+# Avoid the pyarrow 26.0.1 startup issue reported by Community Cloud.
+pyarrow>=18,<25
