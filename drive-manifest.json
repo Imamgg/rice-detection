@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1svxiTGeo-NoJoKnUj5Za_Z0COYxl5aAL",
+    "path": "rtdetr_l_rice_skenario_6_25\\weights\\best.pt"
+  },
+  {
+    "id": "1LCuENJmlWWReA6XpLJ7UhnPfXXm_L7UJ",
+    "path": "yolov3_rice_skenario_1_25\\weights\\best.pt"
+  },
+  {
+    "id": "15t9ysBZRYF075_6Dwzm1UTcRhQKMNXb4",
+    "path": "yolov3_riceblue_skenario_1\\weights\\best.pt"
+  },
+  {
+    "id": "1VJVKW3rcKjN9KrgPIBLUWgseb0lpLfIl",
+    "path": "yolov3_riceblue_skenario_4\\weights\\best.pt"
+  },
+  {
+    "id": "1uu9R2WhWXp6FrcYL7aOjJI6Iw3Vyjmk9",
+    "path": "yolov8n_riceblue_skenario_2\\weights\\best.pt"
+  },
+  {
+    "id": "10d3KKZbx0EFlessZwFTK1FTHfKDn2s19",
+    "path": "yolov8n_riceblue_skenario_5\\weights\\best.pt"
+  }
+]

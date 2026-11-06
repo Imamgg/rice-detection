@@ -1,0 +1,9 @@
+streamlit==1.50.0
+ultralytics==8.4.203
+torch>=2.5,<3
+torchvision>=0.20,<1
+pillow>=10,<12
+pandas>=2.2,<3
+gdown>=5.2,<6
+PyYAML>=6,<7
+protobuf>=3.20.3,<5
