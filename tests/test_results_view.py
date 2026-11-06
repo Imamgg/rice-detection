@@ -2,7 +2,6 @@
 import io
 from pathlib import Path
 import sys
-from threading import RLock
 import unittest
 from unittest.mock import patch
 
@@ -14,6 +13,12 @@ from streamlit.testing.v1 import AppTest
 
 class ResultsViewTest(unittest.TestCase):
     def test_nonempty_detection_renders_chart_and_exports(self):
+        self.check_results(1)
+
+    def test_all_six_models_render_results(self):
+        self.check_results(6)
+
+    def check_results(self, model_count):
         image = Image.new('RGB', (64, 64), color='black')
         upload = io.BytesIO()
         image.save(upload, format='PNG')
@@ -25,21 +30,20 @@ class ResultsViewTest(unittest.TestCase):
             'elapsed_ms': 15.,
             'inference_ms': 10.,
         }
-        def fake_loader(path):
-            return object(), RLock()
-
         app = Path(__file__).resolve().parents[1] / 'app.py'
         with patch('streamlit.file_uploader', return_value=upload), \
-             patch('inference.load_detector', new=fake_loader), \
-             patch('inference.predict', return_value=output):
+             patch('inference.run_detector', return_value=output) as runner:
             at = AppTest.from_file(str(app), default_timeout=60).run()
             self.assertFalse(at.exception, [e.message for e in at.exception])
+            at.multiselect[0].set_value(at.multiselect[0].options[:model_count]).run()
             at.button[0].click().run()
             self.assertFalse(at.exception, [e.message for e in at.exception])
             self.assertEqual(at.metric[0].value, '1')
-            self.assertEqual(len(at.get('arrow_vega_lite_chart')), 1)
+            self.assertEqual(runner.call_count, model_count)
+            self.assertEqual(len(at.get('arrow_vega_lite_chart')), model_count)
             downloads = at.get('download_button')
-            self.assertEqual(len(downloads), 2)
+            self.assertEqual(len(downloads), model_count + 1)
+            self.assertEqual(len(at.dataframe[0].value), model_count)
             self.assertEqual(at.dataframe[0].value.iloc[0]['Butir'], 1)
 
 

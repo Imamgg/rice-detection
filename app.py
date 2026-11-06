@@ -6,11 +6,10 @@ import logging
 import pandas as pd
 from PIL import UnidentifiedImageError, Image
 import streamlit as st
-from inference import ROOT, experiments, load_detector, predict, read_image, png_bytes
+from inference import ROOT, experiments, run_detector, read_image, png_bytes
 
 st.set_page_config(page_title='Rupa Beras · Meja Inspeksi', page_icon=':material/grain:', layout='wide')
 st.markdown(f'<style>{(ROOT / "assets/style.css").read_text()}</style>', unsafe_allow_html=True)
-cached_detector = st.cache_resource(max_entries=2)(load_detector)
 runs = experiments()
 labels = {p.name: p for p in runs}
 
@@ -69,8 +68,8 @@ if page == 'Deteksi & bandingkan':
             for name in selected:
                 with st.spinner(f'Menganalisis dengan {model_label(name)}…'):
                     try:
-                        detector, lock = cached_detector(str(labels[name] / 'weights/best.pt'))
-                        outputs[name] = predict(detector, lock, image, confidence, iou, size, device)
+                        outputs[name] = run_detector(str(labels[name] / 'weights/best.pt'),
+                            image, confidence, iou, size, device)
                     except Exception as exc:
                         logging.exception('Inference failed for %s', name)
                         errors[name] = 'Analisis belum berhasil. Coba kembali atau pilih model lain.'

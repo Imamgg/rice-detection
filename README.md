@@ -26,7 +26,7 @@ Untuk mengunduh semua bobot sebelum server dijalankan, opsional:
 2. Pilih branch `main` dan entrypoint `app.py`. Dependensi mendukung Python 3.11 sampai 3.14.
 3. Pasang dependensi dari `requirements.txt` (otomatis pada Streamlit Community Cloud).
 4. Pastikan server dapat mengunduh file dari Google Drive dan menulis ke folder `models/`.
-5. Sediakan memori yang cukup untuk PyTorch dan model pilihan. YOLOv8n merupakan bobot paling kecil; YOLOv3 memerlukan memori lebih besar. Maksimum dua model disimpan dalam cache.
+5. Sediakan memori yang cukup untuk PyTorch dan model pilihan. YOLOv8n merupakan bobot paling kecil; YOLOv3 memerlukan memori lebih besar. Model dijalankan bergantian dan dilepas setelah setiap inferensi; bobot model tidak disimpan dalam cache RAM. Proses inferensi diserialkan antar sesi untuk membatasi pemuatan model bersamaan. Memilih semua model tetap memerlukan waktu lebih lama; server harus cukup untuk kebutuhan puncak satu model terbesar.
 
 Paket deployment memakai PyTorch CPU agar tidak mengunduh dependensi NVIDIA CUDA pada hosting tanpa GPU. `packages.txt` memasang pustaka sistem OpenCV pada Linux. Untuk deployment GPU, pasang pasangan PyTorch/torchvision CUDA yang sesuai secara terpisah. Restart pada hosting dengan penyimpanan sementara dapat mengharuskan pengunduhan ulang.
 
@@ -42,7 +42,7 @@ Jika hasil deteksi gagal ditampilkan dengan pesan `TypedDict ... unexpected keyw
 .\.venv\Scripts\python -m unittest discover -s tests -v
 ```
 
-Uji menggunakan satu prediksi contoh untuk memeriksa jalur hasil yang tidak kosong, termasuk grafik varietas, hitungan, tabel ringkasan, dan tombol unduhan. Uji ini tidak mengukur akurasi model dan tidak perlu mengunduh bobot.
+Uji menggunakan prediksi contoh untuk memeriksa jalur satu model dan enam model sekaligus, termasuk grafik varietas, hitungan, tabel ringkasan, dan tombol unduhan. Uji ini tidak mengukur akurasi model dan tidak perlu mengunduh bobot.
 
 ## Penggunaan
 
