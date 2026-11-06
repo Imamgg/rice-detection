@@ -1,6 +1,8 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-streamlit==1.50.0
+streamlit==1.52.2
+# Altair 6 fixes the TypedDict import used by charts on Python 3.14.
+altair==6.0.0
 ultralytics==8.4.203
 torch==2.9.1+cpu
 torchvision==0.24.1+cpu

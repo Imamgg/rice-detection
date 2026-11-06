@@ -34,6 +34,16 @@ Paket deployment memakai PyTorch CPU agar tidak mengunduh dependensi NVIDIA CUDA
 
 Jika log Python 3.14 menampilkan `TypeError: Metaclasses with custom tp_new are not supported` saat memuat `google._upb._message`, pastikan server sudah memakai `protobuf==6.33.5` dari requirements terbaru. Versi 4.25.x tidak digunakan lagi. Perubahan requirements akan memicu pemasangan ulang pada Community Cloud; gunakan **Reboot app** jika server masih memakai lingkungan lama. `pyarrow` dibatasi di bawah versi 25 untuk menghindari versi bermasalah yang terdeteksi pada log hosting.
 
+Jika hasil deteksi gagal ditampilkan dengan pesan `TypedDict ... unexpected keyword argument 'closed'`, periksa bahwa versi yang terpasang adalah Streamlit 1.52.2 dan Altair 6.0.0. Pasangan tersebut mendukung grafik pada Python 3.14; Altair 5.5.0 gagal dimuat pada lingkungan ini.
+
+## Uji regresi halaman hasil
+
+```powershell
+.\.venv\Scripts\python -m unittest discover -s tests -v
+```
+
+Uji menggunakan satu prediksi contoh untuk memeriksa jalur hasil yang tidak kosong, termasuk grafik varietas, hitungan, tabel ringkasan, dan tombol unduhan. Uji ini tidak mengukur akurasi model dan tidak perlu mengunduh bobot.
+
 ## Penggunaan
 
 Pilih satu atau beberapa model, unggah satu PNG/JPG/JPEG/WebP, kemudian tekan **Jalankan deteksi**. Batas unggah 20 MB dan 25 megapiksel. Periksa hasil setiap model melalui tab dan unduh hasil sebagai PNG atau ZIP. Jalankan ulang setelah mengganti gambar atau pengaturan. Menu **Panduan penggunaan** menjelaskan alur dan interpretasi hasil.
