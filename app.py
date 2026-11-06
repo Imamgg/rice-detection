@@ -3,12 +3,19 @@ import io
 import json
 import zipfile
 import logging
+import base64
 import pandas as pd
 from PIL import UnidentifiedImageError, Image
 import streamlit as st
 from inference import ROOT, experiments, run_detector, read_image, png_bytes
 
 st.set_page_config(page_title='Rupa Beras · Meja Inspeksi', page_icon=':material/grain:', layout='wide')
+@st.cache_data
+def font_css():
+    font = base64.b64encode((ROOT / 'assets/fonts/Manrope.ttf').read_bytes()).decode()
+    return "@font-face{font-family:'Manrope';src:url(data:font/ttf;base64," + font + ") format('truetype');font-weight:200 800;font-display:swap;}"
+
+st.markdown(f'<style>{font_css()}</style>', unsafe_allow_html=True)
 st.markdown(f'<style>{(ROOT / "assets/style.css").read_text()}</style>', unsafe_allow_html=True)
 runs = experiments()
 labels = {p.name: p for p in runs}
@@ -17,10 +24,10 @@ def model_label(name):
     return name
 
 with st.sidebar:
-    st.header('Meja inspeksi')
-    st.caption('Atur model, lalu periksa setiap butir.')
-    page = st.radio('Ruang kerja', ['Deteksi & bandingkan', 'Panduan penggunaan'])
+    st.markdown('''<div class="app-brand"><span class="brand-icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 20 17 4M10 15c-5 0-6-4-5-7 4 0 7 2 5 7ZM14 10c-1-5 2-7 6-7 1 4-1 7-6 7Z"/></svg></span><div>Rupa Beras<small>Inspeksi varietas beras</small></div></div>''', unsafe_allow_html=True)
+    page = st.radio('Ruang kerja', ['Deteksi & bandingkan', 'Panduan penggunaan'], label_visibility='collapsed')
     st.divider()
+    st.markdown('<div class="control-heading">Konfigurasi analisis</div>', unsafe_allow_html=True)
     ready = [p.name for p in runs]
     default = next((n for n in ready if n.startswith('yolov8n')), ready[0] if ready else None)
     selected = st.multiselect('Model yang digunakan', ready, default=[default] if default else [])
@@ -34,22 +41,22 @@ with st.sidebar:
         device_label = st.selectbox('Perangkat', ['CPU'] + (['CUDA GPU'] if torch.cuda.is_available() else []))
         device = '0' if device_label == 'CUDA GPU' else 'cpu'
 
-st.markdown('<div class="identity">Rupa Beras <span>Inspeksi varietas beras</span></div>', unsafe_allow_html=True)
+st.markdown(f'<div class="workspace-topbar"><span>Ruang kerja / {page}</span><span class="model-availability">{len(ready)} model tersedia</span></div>', unsafe_allow_html=True)
 
 if page == 'Deteksi & bandingkan':
-    st.title('Kenali beras,\nbutir demi butir.')
-    st.markdown('<p class="intro">Unggah citra beras, pilih model, dan periksa varietas serta lokasi setiap butir dalam satu ruang kerja.</p>', unsafe_allow_html=True)
+    st.title('Deteksi varietas beras')
+    st.markdown('<p class="intro">Periksa varietas, lokasi, dan jumlah butir. Bandingkan hasil beberapa model dalam satu analisis.</p>', unsafe_allow_html=True)
     left, right = st.columns([1.6, 1], gap='large')
     with left:
-        st.subheader('Citra yang akan diperiksa')
+        st.subheader('Gambar yang akan dianalisis')
         upload = st.file_uploader('Unggah gambar beras', type=['png', 'jpg', 'jpeg', 'webp'],
                                   help='PNG, JPG, atau WebP. Maksimal 20 MB dan 25 megapiksel.')
     with right:
-        st.subheader('Siapkan citra')
+        st.subheader('Siapkan gambar Anda')
         st.write('Gunakan gambar tajam dengan pencahayaan merata dan latar polos. Usahakan setiap butir terlihat jelas dan tidak saling menutupi.')
         st.caption('Petunjuk lengkap tersedia di menu Panduan penggunaan.')
     if upload is None:
-        st.markdown('<div class="empty"><h3>Mulai dari satu gambar.</h3><p>Hasil anotasi, hitungan varietas, dan perbandingan model akan muncul di sini setelah analisis.</p></div>', unsafe_allow_html=True)
+        st.markdown('''<div class="empty"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m4 17 5-5 4 4 3-3 4 4"/></svg><h3>Hasil inspeksi akan tampil di sini</h3><p>Unggah gambar dan jalankan deteksi untuk melihat anotasi, jumlah varietas, dan perbandingan model.</p></div>''', unsafe_allow_html=True)
         st.button('Jalankan deteksi', type='primary', disabled=True)
     else:
         data = upload.getvalue()
@@ -156,4 +163,4 @@ else:
     with st.expander('Apa isi unduhan ZIP?'):
         st.write('ZIP berisi gambar anotasi dan tabel CSV koordinat serta keyakinan untuk setiap model, tabel perbandingan, dan pengaturan analisis dalam JSON. Koordinat x1, y1, x2, y2 menggunakan piksel pada gambar asli.')
 
-st.markdown('<div class="footer">Rupa Beras · Inspeksi varietas dan jumlah butir</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer"><span>Rupa Beras</span><span>Deteksi varietas dan penghitungan butir</span></div>', unsafe_allow_html=True)

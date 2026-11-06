@@ -20,3 +20,4 @@ scripts/build_hki_reports.py
 .env.*
 *.pt
 *.part
+/scripts
